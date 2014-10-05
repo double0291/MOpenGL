@@ -14,7 +14,7 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 	private Cube mCube;
 	private float mTransY;
 
-	// private float mAngle;
+	 private float mAngle;
 
 	public MyGLRender(boolean useTranslucentBackground) {
 		this.mTranslucentBackground = useTranslucentBackground;
@@ -45,8 +45,19 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 		gl.glMatrixMode(GL10.GL_MODELVIEW); // 6
 		// 将当前的用户坐标系的原点移到屏幕中心，类似于一个复位操作
 		gl.glLoadIdentity(); // 7
+		
 		// 沿着 X, Y 和 Z 轴移动
-		gl.glTranslatef(0.0f, (float) Math.sin(mTransY), -7.0f); // 8
+		gl.glTranslatef(0.0f, (float) Math.sin(mTransY) / 2, -7.0f); // 8
+		
+		// 变换角度
+		gl.glRotatef(mAngle, 0.0f, 1.0f, 0.0f);
+		gl.glRotatef(mAngle, 1.0f, 0.0f, 0.0f);
+		
+		/* 一系列的图形操作，最后的先执行，所以把形状的变换放到最后，
+		 * 如果放到前面，会之旋转的过程中变换形状，而不是一开始变换 */
+		// 变换形状
+		gl.glScalef(1, 2, 1);
+		
 
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY); // 9
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
@@ -54,6 +65,7 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 		mCube.draw(gl); // 10
 
 		mTransY += .075f;
+		mAngle += .4f;
 	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) { // 11
