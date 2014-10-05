@@ -5,11 +5,13 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView;
 
+import com.doublechen.mopengl.view.Cube;
 import com.doublechen.mopengl.view.Square;
 
 public class MyGLRender implements GLSurfaceView.Renderer {
 	private boolean mTranslucentBackground;
 	private Square mSquare;
+	private Cube mCube;
 	private float mTransY;
 
 	// private float mAngle;
@@ -17,6 +19,7 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 	public MyGLRender(boolean useTranslucentBackground) {
 		this.mTranslucentBackground = useTranslucentBackground;
 		mSquare = new Square(); // 3
+		mCube = new Cube();
 	}
 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) { // 15
@@ -37,17 +40,18 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 gl) { // 4
 		// Redraw background color
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // 5
-
+		gl.glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
+		
 		gl.glMatrixMode(GL10.GL_MODELVIEW); // 6
 		// 将当前的用户坐标系的原点移到屏幕中心，类似于一个复位操作
 		gl.glLoadIdentity(); // 7
 		// 沿着 X, Y 和 Z 轴移动
-		gl.glTranslatef(0.0f, (float) Math.sin(mTransY), -3.0f); // 8
+		gl.glTranslatef(0.0f, (float) Math.sin(mTransY), -7.0f); // 8
 
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY); // 9
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
-		mSquare.draw(gl); // 10
+		mCube.draw(gl); // 10
 
 		mTransY += .075f;
 	}
@@ -55,10 +59,24 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) { // 11
 		gl.glViewport(0, 0, width, height); // 12
 
-		float ratio = (float) width / height;
-		gl.glMatrixMode(GL10.GL_PROJECTION); // 13
-		gl.glLoadIdentity();
-		gl.glFrustumf(-ratio, ratio, -1, 1, 1, 10); // 14
+//		float ratio = (float) width / height;
+		
+		float aspectRatio;
+		float zNear = .1f;
+		float zFar = 1000;
+		float fieldOfView = 30.0f / 57.3f;
+		float size;
+		
+		gl.glEnable(GL10.GL_NORMALIZE);
+		aspectRatio=(float)width/(float)height; 
+		gl.glMatrixMode(GL10.GL_PROJECTION);
+		size = zNear * (float)(Math.tan((double)(fieldOfView/2.0f)));
+		gl.glFrustumf(-size, size, -size / aspectRatio, size / aspectRatio, zNear, zFar);
+		
+		
+//		gl.glMatrixMode(GL10.GL_PROJECTION); // 13
+//		gl.glLoadIdentity();
+//		gl.glFrustumf(-ratio, ratio, -1, 1, 1, 10); // 14
 	}
 
 }
