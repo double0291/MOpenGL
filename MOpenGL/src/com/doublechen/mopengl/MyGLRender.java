@@ -35,6 +35,8 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 		gl.glEnable(GL10.GL_CULL_FACE); // 19
 		gl.glShadeModel(GL10.GL_SMOOTH); // 20
 		gl.glEnable(GL10.GL_DEPTH_TEST); // 21
+		// 只绘制正面
+//		gl.glCullFace(GL10.GL_FRONT);
 	}
 
 	public void onDrawFrame(GL10 gl) { // 4
@@ -76,7 +78,8 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 		float aspectRatio;
 		float zNear = .1f;
 		float zFar = 1000;
-		float fieldOfView = 30.0f / 57.3f;
+		// 加大这个值，可以将视角挪远
+		float fieldOfView = 300.0f / 57.3f;
 		float size;
 		
 		gl.glEnable(GL10.GL_NORMALIZE);
