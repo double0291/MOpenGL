@@ -6,11 +6,9 @@ import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView;
 
 import com.doublechen.mopengl.view.Cube;
-import com.doublechen.mopengl.view.Square;
 
 public class CubeGLRender implements GLSurfaceView.Renderer {
 	private boolean mTranslucentBackground;
-	private Square mSquare;
 	private Cube mCube;
 	private float mTransY;
 
@@ -18,7 +16,6 @@ public class CubeGLRender implements GLSurfaceView.Renderer {
 
 	public CubeGLRender(boolean useTranslucentBackground) {
 		this.mTranslucentBackground = useTranslucentBackground;
-		mSquare = new Square(); // 3
 		mCube = new Cube();
 	}
 

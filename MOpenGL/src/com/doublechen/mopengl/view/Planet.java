@@ -32,7 +32,7 @@ public class Planet {
 
 		float blue = 0f;
 		float red = 1.0f;
-		int numVertices = 0;
+//		int numVertices = 0;
 		int vIndex = 0; // vertex index
 		int cIndex = 0; // color index
 
