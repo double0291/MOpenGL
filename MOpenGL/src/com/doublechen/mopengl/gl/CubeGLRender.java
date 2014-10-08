@@ -1,4 +1,4 @@
-package com.doublechen.mopengl;
+package com.doublechen.mopengl.gl;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -8,7 +8,7 @@ import android.opengl.GLSurfaceView;
 import com.doublechen.mopengl.view.Cube;
 import com.doublechen.mopengl.view.Square;
 
-public class MyGLRender implements GLSurfaceView.Renderer {
+public class CubeGLRender implements GLSurfaceView.Renderer {
 	private boolean mTranslucentBackground;
 	private Square mSquare;
 	private Cube mCube;
@@ -16,7 +16,7 @@ public class MyGLRender implements GLSurfaceView.Renderer {
 
 	 private float mAngle;
 
-	public MyGLRender(boolean useTranslucentBackground) {
+	public CubeGLRender(boolean useTranslucentBackground) {
 		this.mTranslucentBackground = useTranslucentBackground;
 		mSquare = new Square(); // 3
 		mCube = new Cube();
