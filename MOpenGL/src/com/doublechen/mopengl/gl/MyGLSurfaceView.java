@@ -21,7 +21,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
 			setRenderer(new CubeGLRender(true));
 			break;
 		case 2:
-			setRenderer(new SolarSystemRender());
+			setRenderer(new SolarSystemRender(true));
 			break;
 
 		default:

@@ -32,7 +32,7 @@ public class Planet {
 
 		float blue = 0f;
 		float red = 1.0f;
-//		int numVertices = 0;
+		// int numVertices = 0;
 		int vIndex = 0; // vertex index
 		int cIndex = 0; // color index
 
@@ -139,6 +139,11 @@ public class Planet {
 		gl.glColorPointer(4, GL10.GL_FLOAT, 0, mColorData);
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
+		// GL_POINTS打点
+//		gl.glDrawArrays(GL10.GL_POINTS, 0, (mSlices + 1) * 2 * (mStacks - 1) + 2); // 3
+		// GL_LINE_STRIP可以只显示骨架
+//		gl.glDrawArrays(GL10.GL_LINE_STRIP, 0, (mSlices + 1) * 2 * (mStacks - 1) + 2); // 3
+		// GL_TRIANGLE_STRIP可以理解为铺砖
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, (mSlices + 1) * 2 * (mStacks - 1) + 2); // 3
 	}
 }

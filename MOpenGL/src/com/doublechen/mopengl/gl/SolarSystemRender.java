@@ -8,13 +8,19 @@ import android.opengl.GLSurfaceView;
 import com.doublechen.mopengl.view.Planet;
 
 public class SolarSystemRender implements GLSurfaceView.Renderer {
+	private boolean mTranslucentBackground;
+
 	Planet mPlanet;
 
 	private float mTransY;
 	private float mAngle;
 
-	public SolarSystemRender() {
-		mPlanet = new Planet(10, 10, 1.0f, 1.0f);
+	public SolarSystemRender(boolean useTranslucentBackground) {
+		this.mTranslucentBackground = useTranslucentBackground;
+		// 更改stacks和slices的值会让球体更细腻，更改squash的值会让球变形
+		// 还可以采用特殊的lighting和shading工具或者textures来让球更细腻
+		// 这种会在后面展开
+		mPlanet = new Planet(10, 10, 1.0f, 0.5f);
 	}
 
 	@Override
@@ -23,7 +29,10 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		gl.glDisable(GL10.GL_DITHER); // 16
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST); // 17
 
-		gl.glClearColor(0, 0, 0, 0);
+		if (mTranslucentBackground) // 18
+			gl.glClearColor(0, 0, 0, 0);
+		else
+			gl.glClearColor(1, 1, 1, 1);
 
 		gl.glEnable(GL10.GL_CULL_FACE); // 19
 		gl.glShadeModel(GL10.GL_SMOOTH); // 20
@@ -33,7 +42,7 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+//		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glTranslatef(0.0f, (float) Math.sin(mTransY), -4.0f);
