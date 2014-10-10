@@ -17,10 +17,6 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 
 	public SolarSystemRender(boolean useTranslucentBackground) {
 		this.mTranslucentBackground = useTranslucentBackground;
-		// 更改stacks和slices的值会让球体更细腻，更改squash的值会让球变形
-		// 还可以采用特殊的lighting和shading工具或者textures来让球更细腻
-		// 这种会在后面展开
-		mPlanet = new Planet(10, 10, 1.0f, 0.5f);
 	}
 
 	@Override
@@ -30,19 +26,21 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST); // 17
 
 		if (mTranslucentBackground) // 18
-			gl.glClearColor(0, 0, 0, 0);
+			gl.glClearColor(0.5f, 0.5f, 0.5f, 0);
 		else
 			gl.glClearColor(1, 1, 1, 1);
 
 		gl.glEnable(GL10.GL_CULL_FACE); // 19
 		gl.glShadeModel(GL10.GL_SMOOTH); // 20
 		gl.glEnable(GL10.GL_DEPTH_TEST); // 21
+
+		initGeometry(gl);
 	}
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-//		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		// gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glTranslatef(0.0f, (float) Math.sin(mTransY), -4.0f);
@@ -68,6 +66,13 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		gl.glMatrixMode(GL10.GL_PROJECTION);
 		size = zNear * (float) (Math.tan((double) (fieldOfView / 2.0f)));
 		gl.glFrustumf(-size, size, -size / aspectRatio, size / aspectRatio, zNear, zFar);
+	}
+
+	private void initGeometry(GL10 g0) {
+		// 更改stacks和slices的值会让球体更细腻，更改squash的值会让球变形
+		// 还可以采用特殊的lighting和shading工具或者textures来让球更细腻
+		// 这种会在后面展开
+		mPlanet = new Planet(20, 20, 1.0f, 1.0f);
 	}
 
 }

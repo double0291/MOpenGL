@@ -108,7 +108,7 @@ public class Planet {
 					vIndex += 2 * 3; // 14
 				}
 
-				blue += colorIncrement; // 15
+//				blue += colorIncrement; // 15
 				red -= colorIncrement;
 
 				// create a degenerate triangle to connect stacks and maintain
