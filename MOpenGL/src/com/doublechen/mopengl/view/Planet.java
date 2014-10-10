@@ -6,6 +6,8 @@ import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import com.doublechen.mopengl.utils.BufferUtil;
+
 public class Planet {
 	FloatBuffer mVertexData;
 	FloatBuffer mNormalData;
@@ -108,7 +110,7 @@ public class Planet {
 					vIndex += 2 * 3; // 14
 				}
 
-//				blue += colorIncrement; // 15
+				// blue += colorIncrement; // 15
 				red -= colorIncrement;
 
 				// create a degenerate triangle to connect stacks and maintain
@@ -118,17 +120,8 @@ public class Planet {
 				vertexData[vIndex + 2] = vertexData[vIndex + 5] = vertexData[vIndex - 1];
 			}
 		}
-		mVertexData = makeFloatBuffer(vertexData); // 17
-		mColorData = makeFloatBuffer(colorData);
-	}
-
-	protected static FloatBuffer makeFloatBuffer(float[] arr) {
-		ByteBuffer bb = ByteBuffer.allocateDirect(arr.length * 4);
-		bb.order(ByteOrder.nativeOrder());
-		FloatBuffer fb = bb.asFloatBuffer();
-		fb.put(arr);
-		fb.position(0);
-		return fb;
+		mVertexData = BufferUtil.makeFloatBuffer(vertexData); // 17
+		mColorData = BufferUtil.makeFloatBuffer(colorData);
 	}
 
 	public void draw(GL10 gl) {
@@ -140,9 +133,11 @@ public class Planet {
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
 		// GL_POINTS打点
-//		gl.glDrawArrays(GL10.GL_POINTS, 0, (mSlices + 1) * 2 * (mStacks - 1) + 2); // 3
+		// gl.glDrawArrays(GL10.GL_POINTS, 0, (mSlices + 1) * 2 * (mStacks - 1)
+		// + 2); // 3
 		// GL_LINE_STRIP可以只显示骨架
-//		gl.glDrawArrays(GL10.GL_LINE_STRIP, 0, (mSlices + 1) * 2 * (mStacks - 1) + 2); // 3
+		// gl.glDrawArrays(GL10.GL_LINE_STRIP, 0, (mSlices + 1) * 2 * (mStacks -
+		// 1) + 2); // 3
 		// GL_TRIANGLE_STRIP可以理解为铺砖
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, (mSlices + 1) * 2 * (mStacks - 1) + 2); // 3
 	}

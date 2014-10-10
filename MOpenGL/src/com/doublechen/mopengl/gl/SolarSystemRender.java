@@ -5,9 +5,12 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView;
 
+import com.doublechen.mopengl.utils.BufferUtil;
 import com.doublechen.mopengl.view.Planet;
 
 public class SolarSystemRender implements GLSurfaceView.Renderer {
+	public static final int SS_SUNLIGHT = GL10.GL_LIGHT0;
+
 	private boolean mTranslucentBackground;
 
 	Planet mPlanet;
@@ -31,10 +34,13 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 			gl.glClearColor(1, 1, 1, 1);
 
 		gl.glEnable(GL10.GL_CULL_FACE); // 19
+//		gl.glCullFace(GL10.GL_BACK);
 		gl.glShadeModel(GL10.GL_SMOOTH); // 20
 		gl.glEnable(GL10.GL_DEPTH_TEST); // 21
+//		gl.glDepthMask(false);
 
 		initGeometry(gl);
+		initLighting(gl);
 	}
 
 	@Override
@@ -73,6 +79,16 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		// 还可以采用特殊的lighting和shading工具或者textures来让球更细腻
 		// 这种会在后面展开
 		mPlanet = new Planet(20, 20, 1.0f, 1.0f);
+	}
+
+	private void initLighting(GL10 gl) {
+		float[] diffuse = { 0.0f, 1.0f, 0.0f, 1.0f }; // 1
+		float[] pos = { 0.0f, 10.0f, -3.0f, 1.0f }; // 2
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(pos)); // 3
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(diffuse));// 4
+		gl.glShadeModel(GL10.GL_FLAT);// 5
+		gl.glEnable(GL10.GL_LIGHTING);// 6
+		gl.glEnable(SS_SUNLIGHT);// 7
 	}
 
 }
