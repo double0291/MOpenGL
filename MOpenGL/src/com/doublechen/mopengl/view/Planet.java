@@ -1,7 +1,5 @@
 package com.doublechen.mopengl.view;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -30,6 +28,7 @@ public class Planet {
 	private void init(int stacks, int slices, float radius, float squash, String textureFile) {
 		float[] vertexData;
 		float[] colorData; // 2
+		float[] normalData;
 		float colorIncrement = 0f;
 
 		float blue = 0f;
@@ -37,6 +36,7 @@ public class Planet {
 		// int numVertices = 0;
 		int vIndex = 0; // vertex index
 		int cIndex = 0; // color index
+		int nIndex = 0; // normal index
 
 		mScale = radius;
 		mSquash = squash;
@@ -51,6 +51,8 @@ public class Planet {
 			vertexData = new float[3 * ((mSlices * 2 + 2) * mStacks)]; // 4
 			// color data
 			colorData = new float[(4 * (mSlices * 2 + 2) * mStacks)]; // 5
+			// Normalize data
+			normalData = new float[(3 * (mSlices * 2 + 2) * mStacks)]; // 1
 
 			// 命名的时候，phi代表latitude，theta代表longitude
 			int phiIdx, thetaIdx;
@@ -106,8 +108,18 @@ public class Planet {
 					colorData[cIndex + 3] = (float) 1.0;
 					colorData[cIndex + 7] = (float) 1.0;
 
+					// Normalize data pointers for lighting.
+					normalData[nIndex + 0] = cosPhi0 * cosTheta; // 2
+					normalData[nIndex + 1] = sinPhi0;
+					normalData[nIndex + 2] = cosPhi0 * sinTheta;
+
+					normalData[nIndex + 3] = cosPhi1 * cosTheta; // 3
+					normalData[nIndex + 4] = sinPhi1;
+					normalData[nIndex + 5] = cosPhi1 * sinTheta;
+
 					cIndex += 2 * 4; // 13
 					vIndex += 2 * 3; // 14
+					nIndex += 2 * 3;
 				}
 
 				// blue += colorIncrement; // 15
@@ -122,10 +134,17 @@ public class Planet {
 		}
 		mVertexData = BufferUtil.makeFloatBuffer(vertexData); // 17
 		mColorData = BufferUtil.makeFloatBuffer(colorData);
+		mNormalData = BufferUtil.makeFloatBuffer(normalData);
 	}
 
 	public void draw(GL10 gl) {
-		gl.glFrontFace(GL10.GL_CW); // 1
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		gl.glEnable(GL10.GL_CULL_FACE);
+		gl.glCullFace(GL10.GL_BACK);
+
+		gl.glNormalPointer(GL10.GL_FLOAT, 0, mNormalData);
+		gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
+
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexData); // 2
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 

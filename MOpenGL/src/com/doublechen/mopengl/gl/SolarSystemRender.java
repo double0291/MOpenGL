@@ -9,6 +9,7 @@ import com.doublechen.mopengl.utils.BufferUtil;
 import com.doublechen.mopengl.view.Planet;
 
 public class SolarSystemRender implements GLSurfaceView.Renderer {
+	// 代表光源0，最多8个，0-7
 	public static final int SS_SUNLIGHT = GL10.GL_LIGHT0;
 
 	private boolean mTranslucentBackground;
@@ -34,10 +35,12 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 			gl.glClearColor(1, 1, 1, 1);
 
 		gl.glEnable(GL10.GL_CULL_FACE); // 19
-//		gl.glCullFace(GL10.GL_BACK);
+		// 下面这句话没用诶
+		// gl.glCullFace(GL10.GL_BACK);
 		gl.glShadeModel(GL10.GL_SMOOTH); // 20
 		gl.glEnable(GL10.GL_DEPTH_TEST); // 21
-//		gl.glDepthMask(false);
+		// 下面这句话加上后就不显示球来
+		// gl.glDepthMask(false);
 
 		initGeometry(gl);
 		initLighting(gl);
@@ -78,16 +81,26 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		// 更改stacks和slices的值会让球体更细腻，更改squash的值会让球变形
 		// 还可以采用特殊的lighting和shading工具或者textures来让球更细腻
 		// 这种会在后面展开
-		mPlanet = new Planet(20, 20, 1.0f, 1.0f);
+		mPlanet = new Planet(10, 10, 1.0f, 1.0f);
 	}
 
 	private void initLighting(GL10 gl) {
-		float[] diffuse = { 0.0f, 1.0f, 0.0f, 1.0f }; // 1
-		float[] pos = { 0.0f, 10.0f, -3.0f, 1.0f }; // 2
+		// 环境光参数，RGBA
+		float[] ambient = { 0.3f, 0.7f, 0.5f, 1.0f };
+		// 漫射光参数，RGBA
+		float[] diffuse = { 1.0f, 1.0f, 0.0f, 1.0f }; // 1
+		// X, Y, Z, and???
+		// 遗留问题，这边的Y轴参数反了，不晓得为什么
+		float[] pos = { 0f, 10.0f, -3.0f, 1f }; // 2
+		// fv means float vector
 		gl.glLightfv(SS_SUNLIGHT, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(pos)); // 3
 		gl.glLightfv(SS_SUNLIGHT, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(diffuse));// 4
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_AMBIENT, BufferUtil.makeFloatBuffer(ambient));
+		// 如果使用GL_SMOOTH会使表面的光很柔和
 		gl.glShadeModel(GL10.GL_FLAT);// 5
+		// 启动光源总开关
 		gl.glEnable(GL10.GL_LIGHTING);// 6
+		// 允许光源1
 		gl.glEnable(SS_SUNLIGHT);// 7
 	}
 
