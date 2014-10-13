@@ -91,7 +91,7 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		float[] diffuse = { 0.0f, 1.0f, 0.0f, 1.0f }; // 1
 		// X, Y, Z, and???
 		// 遗留问题，这边的Y轴参数反了，不晓得为什么
-		float[] pos = { 0f, 5.0f, -3.0f, 1f }; // 2
+		float[] pos = { 10.0f, 0.0f, 3.0f, 1.0f }; // 2
 
 		float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
 		float[] red = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -106,12 +106,17 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		gl.glLightfv(SS_SUNLIGHT, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(pos)); // 3
 		// 光照颜色
 		gl.glLightfv(SS_SUNLIGHT, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(green));// 4
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(red));
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_AMBIENT, BufferUtil.makeFloatBuffer(blue));
+
 		// 当前材质颜色，
 		// 显示的颜色是光照颜色和材质颜色RGB互相与的结果，
 		// 如果光照为红，材质为绿，会显示成一个黑球
-		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(yellow));
-		// gl.glLightfv(SS_SUNLIGHT, GL10.GL_AMBIENT,
-		// BufferUtil.makeFloatBuffer(ambient));
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(green));
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(red));
+//		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, BufferUtil.makeFloatBuffer(blue));
+		gl.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 25);
+
 		// 如果使用GL_SMOOTH会使表面的光很柔和
 		gl.glShadeModel(GL10.GL_SMOOTH);// 5
 		// 启动光源总开关
