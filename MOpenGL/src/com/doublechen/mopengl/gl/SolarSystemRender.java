@@ -81,27 +81,45 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		// 更改stacks和slices的值会让球体更细腻，更改squash的值会让球变形
 		// 还可以采用特殊的lighting和shading工具或者textures来让球更细腻
 		// 这种会在后面展开
-		mPlanet = new Planet(10, 10, 1.0f, 1.0f);
+		mPlanet = new Planet(20, 20, 1.0f, 1.0f);
 	}
 
 	private void initLighting(GL10 gl) {
 		// 环境光参数，RGBA
-		float[] ambient = { 0.3f, 0.7f, 0.5f, 1.0f };
+		// float[] ambient = { 0.3f, 0.7f, 0.5f, 1.0f };
 		// 漫射光参数，RGBA
-		float[] diffuse = { 1.0f, 1.0f, 0.0f, 1.0f }; // 1
+		float[] diffuse = { 0.0f, 1.0f, 0.0f, 1.0f }; // 1
 		// X, Y, Z, and???
 		// 遗留问题，这边的Y轴参数反了，不晓得为什么
-		float[] pos = { 0f, 10.0f, -3.0f, 1f }; // 2
+		float[] pos = { 0f, 5.0f, -3.0f, 1f }; // 2
+
+		float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float[] red = { 1.0f, 0.0f, 0.0f, 1.0f };
+		float[] green = { 0.0f, 1.0f, 0.0f, 1.0f };
+		float[] blue = { 0.0f, 0.0f, 1.0f, 1.0f };
+		float[] cyan = { 0.0f, 1.0f, 1.0f, 1.0f }; // 青色
+		float[] yellow = { 1.0f, 1.0f, 0.0f, 1.0f };
+		float[] magenta = { 1.0f, 0.0f, 1.0f, 1.0f }; // 洋红
+		float[] halfcyan = { 0.0f, 0.5f, 0.5f, 1.0f };
+
 		// fv means float vector
 		gl.glLightfv(SS_SUNLIGHT, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(pos)); // 3
-		gl.glLightfv(SS_SUNLIGHT, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(diffuse));// 4
-		gl.glLightfv(SS_SUNLIGHT, GL10.GL_AMBIENT, BufferUtil.makeFloatBuffer(ambient));
+		// 光照颜色
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(green));// 4
+		// 当前材质颜色，
+		// 显示的颜色是光照颜色和材质颜色RGB互相与的结果，
+		// 如果光照为红，材质为绿，会显示成一个黑球
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(yellow));
+		// gl.glLightfv(SS_SUNLIGHT, GL10.GL_AMBIENT,
+		// BufferUtil.makeFloatBuffer(ambient));
 		// 如果使用GL_SMOOTH会使表面的光很柔和
-		gl.glShadeModel(GL10.GL_FLAT);// 5
+		gl.glShadeModel(GL10.GL_SMOOTH);// 5
 		// 启动光源总开关
 		gl.glEnable(GL10.GL_LIGHTING);// 6
 		// 允许光源1
 		gl.glEnable(SS_SUNLIGHT);// 7
+
+		gl.glLoadIdentity();
 	}
 
 }
