@@ -91,14 +91,14 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		float[] diffuse = { 0.0f, 1.0f, 0.0f, 1.0f }; // 1
 		// X, Y, Z, and???
 		// 遗留问题，这边的Y轴参数反了，不晓得为什么
-		float[] pos = { 10.0f, 0.0f, 3.0f, 1.0f }; // 2
+		float[] pos = { 50.0f, 0.0f, 3.0f, 1.0f }; // 2
 
 		float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
 		float[] red = { 1.0f, 0.0f, 0.0f, 1.0f };
 		float[] green = { 0.0f, 1.0f, 0.0f, 1.0f };
 		float[] blue = { 0.0f, 0.0f, 1.0f, 1.0f };
 		float[] cyan = { 0.0f, 1.0f, 1.0f, 1.0f }; // 青色
-		float[] yellow = { 1.0f, 1.0f, 0.0f, 1.0f };
+		float[] yellow = { .5f, .5f, 0.0f, 1.0f };
 		float[] magenta = { 1.0f, 0.0f, 1.0f, 1.0f }; // 洋红
 		float[] halfcyan = { 0.0f, 0.5f, 0.5f, 1.0f };
 
@@ -114,8 +114,15 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		// 如果光照为红，材质为绿，会显示成一个黑球
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(green));
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(red));
-//		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, BufferUtil.makeFloatBuffer(blue));
+		// gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT,
+		// BufferUtil.makeFloatBuffer(blue));
 		gl.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 25);
+		// GL_EMISSION代表像恒星一样会自行发光
+		// gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_EMISSION,
+		// BufferUtil.makeFloatBuffer(yellow));
+
+		// 使光源随距离的增加减弱
+		gl.glLightf(SS_SUNLIGHT, GL10.GL_LINEAR_ATTENUATION, .025f);
 
 		// 如果使用GL_SMOOTH会使表面的光很柔和
 		gl.glShadeModel(GL10.GL_SMOOTH);// 5
