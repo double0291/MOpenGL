@@ -9,17 +9,21 @@ import com.doublechen.mopengl.utils.BufferUtil;
 import com.doublechen.mopengl.view.Planet;
 
 public class SolarSystemRender implements GLSurfaceView.Renderer {
+	public static final int X_VALUE = 0;
+	public static final int Y_VALUE = 1;
+	public static final int Z_VALUE = 2;
+
+	Planet mEarth, mSun;
+	float[] mEyePosition = { 0.0f, 0.0f, 0.0f };
+
+	static float angle = 0.0f;
+
 	// 代表光源0，最多8个，0-7
 	public static final int SS_SUNLIGHT = GL10.GL_LIGHT0;
 	public static final int SS_FILLLIGHT1 = GL10.GL_LIGHT1;
 	public static final int SS_FILLLIGHT2 = GL10.GL_LIGHT2;
 
 	private boolean mTranslucentBackground;
-
-	Planet mPlanet;
-
-	private float mTransY;
-	private float mAngle;
 
 	public SolarSystemRender(boolean useTranslucentBackground) {
 		this.mTranslucentBackground = useTranslucentBackground;
@@ -77,24 +81,40 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
+		float paleYellow[] = { 1.0f, 1.0f, 0.3f, 1.0f }; // 1
+		float white[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float cyan[] = { 0.0f, 1.0f, 1.0f, 1.0f };
+		float black[] = { 0.0f, 0.0f, 0.0f, 0.0f }; // 2
+
+		// 轨道
+		float orbitalIncrement = 1.25f; // 3
+		float[] sunPos = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-		// gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		/*
-		 * 告诉计算机接下来要做什么
-		 * GL_PROJECTION是对投影矩阵操作，GL_MODELVIEW是对模型视景矩阵操作，GL_TEXTURE是对纹理矩阵进行随后的操作
-		 * http://blog.sina.com.cn/s/blog_61e26bcb0100wxre.html
-		 */
-		gl.glMatrixMode(GL10.GL_MODELVIEW);
-		// 重置
-		gl.glLoadIdentity();
-		/* 平移，参数为各轴的平移量 */
-		gl.glTranslatef(0.0f, (float) Math.sin(mTransY), -4.0f);
-		/* 第一个值为转的度数，后三个表明相应的xyz轴是否旋转，一般只有一个为1 */
-		gl.glRotatef(mAngle, 1, 0, 0);
-		// gl.glRotatef(mAngle, 0, 1, 0);
-		mPlanet.draw(gl);
-		mTransY += .075f;
-		mAngle += .4;
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		gl.glPushMatrix(); // 4
+
+		gl.glTranslatef(-mEyePosition[X_VALUE], -mEyePosition[Y_VALUE], -mEyePosition[Z_VALUE]); // 5
+
+		// 太阳是发光的，这边设置太阳的光源
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(sunPos)); // 6
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(cyan));
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(white));
+
+		gl.glPushMatrix(); // 7
+		// 让地球绕着太阳转
+		angle += orbitalIncrement; // 8
+		gl.glRotatef(angle, 0.0f, 1.0f, 0.0f); // 9
+		executePlanet(mEarth, gl); // 10
+		gl.glPopMatrix(); // 11
+
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_EMISSION, BufferUtil.makeFloatBuffer(paleYellow)); // 12
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(black)); // 13
+		executePlanet(mSun, gl); // 14
+
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_EMISSION, BufferUtil.makeFloatBuffer(black)); // 15
+		gl.glPopMatrix(); // 16
 	}
 
 	@Override
@@ -104,7 +124,7 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 		float aspectRatio;
 		float zNear = .1f;
 		float zFar = 1000;
-		float fieldOfView = 300.0f / 57.3f;
+		float fieldOfView = 3000.0f / 57.3f;
 		float size;
 
 		gl.glEnable(GL10.GL_NORMALIZE);
@@ -118,67 +138,62 @@ public class SolarSystemRender implements GLSurfaceView.Renderer {
 	}
 
 	private void initGeometry(GL10 g0) {
-		// 更改stacks和slices的值会让球体更细腻，更改squash的值会让球变形
-		// 还可以采用特殊的lighting和shading工具或者textures来让球更细腻
-		// 这种会在后面展开
-		mPlanet = new Planet(20, 20, 1.0f, 1.0f);
+		mEyePosition[X_VALUE] = 0.0f;
+		mEyePosition[Y_VALUE] = 0.0f;
+		mEyePosition[Z_VALUE] = 0.0f;
+
+		mEarth = new Planet(50, 50, .3f, 1.0f);
+		mEarth.setPosition(0.0f, 0.0f, -2.0f);
+
+		mSun = new Planet(50, 50, 1.0f, 1.0f);
+		mSun.setPosition(0.0f, 0.0f, 0.0f);
 	}
 
 	private void initLighting(GL10 gl) {
-		float[] posMain = { 5.0f, 4.0f, 6.0f, 1.0f };
+		float[] sunPos = { 0.0f, 0.0f, 0.0f, 1.0f };
 		float[] posFill1 = { -15.0f, 15.0f, 0.0f, 1.0f };
 		float[] posFill2 = { -10.0f, -4.0f, 1.0f, 1.0f };
-
 		float[] white = { 1.0f, 1.0f, 1.0f, 1.0f };
-		float[] red = { 1.0f, 0.0f, 0.0f, 1.0f };
-		float[] dimred = { .5f, 0.0f, 0.0f, 1.0f };
-
-		float[] green = { 0.0f, 1.0f, 0.0f, 0.0f };
-		float[] dimgreen = { 0.0f, .5f, 0.0f, 0.0f };
-		float[] blue = { 0.0f, 0.0f, 1.0f, 1.0f };
 		float[] dimblue = { 0.0f, 0.0f, .2f, 1.0f };
-
 		float[] cyan = { 0.0f, 1.0f, 1.0f, 1.0f };
 		float[] yellow = { 1.0f, 1.0f, 0.0f, 1.0f };
 		float[] magenta = { 1.0f, 0.0f, 1.0f, 1.0f };
 		float[] dimmagenta = { .75f, 0.0f, .25f, 1.0f };
-
 		float[] dimcyan = { 0.0f, .5f, .5f, 1.0f };
 
-		// Lights go here.
-		// 黄
-		gl.glLightfv(SS_SUNLIGHT, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(posMain));
+		// Lights go here
+		gl.glLightfv(SS_SUNLIGHT, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(sunPos));
 		gl.glLightfv(SS_SUNLIGHT, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(white));
 		gl.glLightfv(SS_SUNLIGHT, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(yellow));
-
-		// 蓝
 		gl.glLightfv(SS_FILLLIGHT1, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(posFill1));
 		gl.glLightfv(SS_FILLLIGHT1, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(dimblue));
 		gl.glLightfv(SS_FILLLIGHT1, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(dimcyan));
-
-		// 红
 		gl.glLightfv(SS_FILLLIGHT2, GL10.GL_POSITION, BufferUtil.makeFloatBuffer(posFill2));
 		gl.glLightfv(SS_FILLLIGHT2, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(dimmagenta));
 		gl.glLightfv(SS_FILLLIGHT2, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(dimblue));
 
-		gl.glLightf(SS_SUNLIGHT, GL10.GL_QUADRATIC_ATTENUATION, .005f);
-
 		// Materials go here.
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, BufferUtil.makeFloatBuffer(cyan));
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, BufferUtil.makeFloatBuffer(white));
-
+		gl.glLightf(SS_SUNLIGHT, GL10.GL_QUADRATIC_ATTENUATION, .001f);
 		gl.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 25);
-
 		gl.glShadeModel(GL10.GL_SMOOTH);
-		gl.glLightModelf(GL10.GL_LIGHT_MODEL_TWO_SIDE, 1.0f);
-
+		gl.glLightModelf(GL10.GL_LIGHT_MODEL_TWO_SIDE, 0.0f);
 		gl.glEnable(GL10.GL_LIGHTING);
 		gl.glEnable(SS_SUNLIGHT);
 		gl.glEnable(SS_FILLLIGHT1);
 		gl.glEnable(SS_FILLLIGHT2);
-
-		gl.glLoadIdentity();
-
 	}
 
+	private void executePlanet(Planet mPlanet, GL10 gl) {
+		float posX, posY, posZ;
+		posX = mPlanet.mPos[0]; // 17
+		posY = mPlanet.mPos[1];
+		posZ = mPlanet.mPos[2];
+
+		gl.glPushMatrix();
+		gl.glTranslatef(posX, posY, posZ); // 18
+		mPlanet.draw(gl);
+		gl.glPopMatrix();
+	}
 }

@@ -7,6 +7,7 @@ import javax.microedition.khronos.opengles.GL10;
 import com.doublechen.mopengl.utils.BufferUtil;
 
 public class Planet {
+	public float[] mPos = { 0.0f, 0.0f, 0.0f };
 	FloatBuffer mVertexData;
 	FloatBuffer mNormalData;
 	FloatBuffer mColorData;
@@ -159,5 +160,11 @@ public class Planet {
 		// 1) + 2); // 3
 		// GL_TRIANGLE_STRIP可以理解为铺砖
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, (mSlices + 1) * 2 * (mStacks - 1) + 2); // 3
+	}
+
+	public void setPosition(float x, float y, float z) {
+		mPos[0] = x;
+		mPos[1] = y;
+		mPos[2] = z;
 	}
 }
