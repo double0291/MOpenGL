@@ -3,18 +3,22 @@ package com.doublechen.mopengl.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.content.Context;
 import android.opengl.GLSurfaceView;
 
+import com.doublechen.mopengl.R;
 import com.doublechen.mopengl.view.Square;
 
 public class SquareGLRender implements GLSurfaceView.Renderer {
 	private boolean mTranslucentBackground;
 	private Square mSquare;
 	private float mTransY;
+	private Context mContext;
 
-	public SquareGLRender(boolean useTranslucentBackground) {
+	public SquareGLRender(boolean useTranslucentBackground, Context context) {
 		this.mTranslucentBackground = useTranslucentBackground;
 		mSquare = new Square(); // 3
+		mContext = context;
 	}
 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) { // 15
@@ -31,6 +35,8 @@ public class SquareGLRender implements GLSurfaceView.Renderer {
 		gl.glShadeModel(GL10.GL_SMOOTH); // 20
 		gl.glEnable(GL10.GL_DEPTH_TEST); // 21
 		// gl.glCullFace(GL10.GL_FRONT);
+		
+		mSquare.createTexture(gl, mContext, R.drawable.gold);
 	}
 
 	public void onDrawFrame(GL10 gl) { // 4

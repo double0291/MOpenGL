@@ -15,7 +15,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
 		// Set the Renderer for drawing on the GLSurfaceView
 		switch (position) {
 		case 0:
-			setRenderer(new SquareGLRender(true));
+			setRenderer(new SquareGLRender(true, this.getContext()));
 			break;
 		case 1:
 			setRenderer(new CubeGLRender(true));
